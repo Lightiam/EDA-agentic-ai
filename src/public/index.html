@@ -25,6 +25,14 @@
         <section class="panel left-panel">
           <div class="panel-title">Plan & Chat</div>
           <div id="chatLog" class="chat-log"></div>
+          <div class="image-upload-section">
+            <label for="imageUpload" class="file-label">Reference image</label>
+            <input type="file" id="imageUpload" accept="image/*" />
+            <button id="btn-analyze-image" type="button">Analyze Image</button>
+          </div>
+          <div id="imagePreviewContainer" class="image-preview-container" style="display:none; margin-top: 16px;">
+            <img id="imagePreview" src="" alt="Reference Preview" />
+          </div>
           <form id="promptForm" class="prompt-form">
             <textarea id="promptInput" placeholder="Ask AutoClaw to design a circuit, generate a netlist, or validate topology..."></textarea>
             <button type="submit">Send</button>
