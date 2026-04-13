@@ -375,6 +375,43 @@ class CircuitEditor {
     }
   }
 
+  extractJsonResult(text) {
+    const jsonMatch = text.match(/\{[\s\S]*\}/m);
+    if (!jsonMatch) return null;
+    try {
+      return JSON.parse(jsonMatch[0]);
+    } catch (err) {
+      return null;
+    }
+  }
+
+  applyCircuitFromAIResult(result) {
+    if (!result || !result.components || !result.connections) return false;
+    this.components = [];
+    this.connections = [];
+
+    for (const comp of result.components) {
+      if (!comp.id || !comp.type || typeof comp.x !== 'number' || typeof comp.y !== 'number') continue;
+      const newComp = new CircuitComponent(comp.type, comp.x, comp.y);
+      newComp.id = comp.id;
+      newComp.value = comp.value || '';
+      newComp.unit = comp.unit || '';
+      newComp.rotation = comp.rotation || 0;
+      this.components.push(newComp);
+    }
+
+    for (const conn of result.connections) {
+      if (!conn.fromId || !conn.toId) continue;
+      this.connections.push(new Connection(conn.fromId, conn.toId, conn.fromPort || 'out', conn.toPort || 'in'));
+    }
+
+    if (this.components.length > 0) {
+      this.draw();
+      return true;
+    }
+    return false;
+  }
+
   exportSVG() {
     const width = this.canvas.width;
     const height = this.canvas.height;
@@ -442,12 +479,17 @@ class CircuitEditor {
     };
 
     const reqBody = `${prompt}\n\nCurrent circuit: ${JSON.stringify(circuitData)}`;
+    const payload = {
+      prompt: reqBody,
+      image: this.currentImageBase64,
+      imageFileName: this.currentImageFileName
+    };
 
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: reqBody }),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
@@ -528,7 +570,12 @@ Please identify:
       document.getElementById('loading-entry').remove();
       const agentEntry = document.createElement('div');
       agentEntry.className = 'chat-entry agent';
-      agentEntry.innerHTML = `<div class="label">AI</div><div class="bubble">${data.result || data.error}</div>`;
+      const content = data.result || data.error;
+      const parsed = this.extractJsonResult(content || '');
+      if (parsed && parsed.components && parsed.connections) {
+        this.applyCircuitFromAIResult(parsed);
+      }
+      agentEntry.innerHTML = `<div class="label">AI</div><div class="bubble">${content}</div>`;
       chatLog.appendChild(agentEntry);
       chatLog.scrollTop = chatLog.scrollHeight;
     } catch (error) {

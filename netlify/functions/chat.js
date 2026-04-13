@@ -29,6 +29,8 @@ export default async (req) => {
   try {
     const payload = await req.json();
     const prompt = payload.prompt;
+    const image = payload.image;
+    const imageFileName = payload.imageFileName;
 
     if (!prompt || typeof prompt !== 'string') {
       return new Response(JSON.stringify({ error: 'prompt field is required' }), {
@@ -37,8 +39,13 @@ export default async (req) => {
       });
     }
 
+    let finalPrompt = prompt;
+    if (image && imageFileName) {
+      finalPrompt = `${prompt}\n\n[Image Attached: ${imageFileName}]\nImage Data (base64): ${image}`;
+    }
+
     const agent = await getAgent();
-    const result = await agent.chatToString(prompt);
+    const result = await agent.chatToString(finalPrompt);
 
     return new Response(JSON.stringify({ result }), {
       status: 200,
