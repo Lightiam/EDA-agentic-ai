@@ -1,0 +1,25 @@
+{
+  "functions": {
+    "directory": "netlify/functions"
+  },
+  "build": {
+    "command": "npm run build",
+    "functions": "netlify/functions",
+    "publish": "dist/public"
+  },
+  "env": {
+    "OPENAI_API_KEY": {
+      "description": "OpenAI API key for the agent",
+      "required": true
+    },
+    "OPENAI_BASE_URL": {
+      "description": "OpenAI API base URL (optional)",
+      "required": false
+    },
+    "OPENAI_MODEL": {
+      "description": "OpenAI model to use",
+      "default": "gpt-4o",
+      "required": false
+    }
+  }
+}

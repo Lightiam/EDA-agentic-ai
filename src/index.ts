@@ -4,6 +4,7 @@ import inquirer from 'inquirer';
 import chalk from 'chalk';
 import dotenv from 'dotenv';
 import { Agent } from './agent.js';
+import { runWebUI } from './server.js';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
@@ -103,6 +104,13 @@ program
   .action(async (queryParts) => {
     const options = program.opts();
     await runChat(queryParts, options);
+  });
+
+program
+  .command('ui')
+  .description('Start the AutoClaw web interface')
+  .action(async () => {
+    await runWebUI();
   });
 
 program.parse(process.argv);

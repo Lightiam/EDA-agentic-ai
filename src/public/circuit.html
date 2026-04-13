@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EDA Circuit Editor</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="app-header">
+        <div class="brand">
+          <span class="brand-mark">E</span>
+          <div>
+            <h1>EDA Circuit Editor</h1>
+            <p>AI-powered circuit design and analysis.</p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button id="btn-export" type="button" title="Export circuit as SVG">Export SVG</button>
+          <button id="btn-clear-canvas" type="button" title="Clear the canvas">Clear</button>
+        </div>
+      </header>
+
+      <main class="app-grid">
+        <section class="panel left-panel">
+          <div class="panel-title">Components</div>
+          <div class="components-palette">
+            <button class="component-btn" data-type="voltage_source" title="Voltage Source">
+              <span class="icon">V</span>
+              <span>Voltage</span>
+            </button>
+            <button class="component-btn" data-type="resistor" title="Resistor">
+              <span class="icon">R</span>
+              <span>Resistor</span>
+            </button>
+            <button class="component-btn" data-type="capacitor" title="Capacitor">
+              <span class="icon">C</span>
+              <span>Capacitor</span>
+            </button>
+            <button class="component-btn" data-type="inductor" title="Inductor">
+              <span class="icon">L</span>
+              <span>Inductor</span>
+            </button>
+            <button class="component-btn" data-type="diode" title="Diode">
+              <span class="icon">D</span>
+              <span>Diode</span>
+            </button>
+            <button class="component-btn" data-type="transistor" title="Transistor">
+              <span class="icon">Q</span>
+              <span>Transistor</span>
+            </button>
+          </div>
+
+          <div class="panel-title" style="margin-top: 28px">Properties</div>
+          <div id="propertiesPanel" class="properties-panel">
+            <p style="color: #888; font-size: 0.9rem;">Select a component to edit properties</p>
+          </div>
+
+          <div class="panel-title" style="margin-top: 28px">Chat</div>
+          <form id="promptForm" class="prompt-form">
+            <textarea id="promptInput" placeholder="Ask AI to analyze or modify this circuit..."></textarea>
+            <button type="submit">Send</button>
+          </form>
+        </section>
+
+        <section class="panel center-panel">
+          <div class="panel-title">Canvas</div>
+          <div class="canvas-wrapper">
+            <canvas id="circuitCanvas" width="800" height="600"></canvas>
+            <div class="canvas-hint">Drag components here • Click to connect • Right-click to delete</div>
+          </div>
+        </section>
+
+        <section class="panel right-panel">
+          <div class="panel-title">Circuit Log</div>
+          <div id="chatLog" class="chat-log"></div>
+        </section>
+      </main>
+    </div>
+
+    <script src="/circuit-editor.js"></script>
+  </body>
+</html>

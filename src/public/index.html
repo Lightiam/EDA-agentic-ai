@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AutoClaw Circuit UI</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="app-header">
+        <div class="brand">
+          <span class="brand-mark">A</span>
+          <div>
+            <h1>AutoClaw Circuit</h1>
+            <p>Web UI for circuit design and tool-driven planning.</p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button id="btn-clear" type="button">Clear Log</button>
+        </div>
+      </header>
+
+      <main class="app-grid">
+        <section class="panel left-panel">
+          <div class="panel-title">Plan & Chat</div>
+          <div id="chatLog" class="chat-log"></div>
+          <form id="promptForm" class="prompt-form">
+            <textarea id="promptInput" placeholder="Ask AutoClaw to design a circuit, generate a netlist, or validate topology..."></textarea>
+            <button type="submit">Send</button>
+          </form>
+        </section>
+
+        <section class="panel right-panel">
+          <div class="panel-title">Board Preview</div>
+          <div class="board-preview">
+            <div class="board-header">
+              <span>PCB / Circuit Layout</span>
+              <span class="status-pill">Live</span>
+            </div>
+            <div class="board-surface">
+              <div class="board-chip">U1</div>
+              <div class="board-chip secondary">R1</div>
+              <div class="board-chip tertiary">C1</div>
+              <div class="board-label top-left">SOLAR</div>
+              <div class="board-label bottom-right">BAT</div>
+            </div>
+          </div>
+          <div class="panel-card">
+            <h2>Design hints</h2>
+            <ul>
+              <li>Use natural language to ask for circuits.</li>
+              <li>Example: “Create an RC filter with 5V supply.”</li>
+              <li>Then ask for a netlist or SVG diagram.</li>
+            </ul>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script src="/app.js"></script>
+  </body>
+</html>

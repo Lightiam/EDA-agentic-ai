@@ -108,4 +108,54 @@ GUIDELINES:
       }
     }
   }
+
+  async chatToString(userInput: string): Promise<string> {
+    this.messages.push({ role: 'user', content: userInput });
+    let active = true;
+    let output = '';
+
+    while (active) {
+      try {
+        const response = await this.client.chat.completions.create({
+          model: this.model,
+          messages: this.messages,
+          tools: getToolDefinitions() as any,
+          tool_choice: 'auto'
+        });
+
+        const message = response.choices[0].message;
+        this.messages.push(message);
+
+        if (message.content) {
+          output += message.content + '\n';
+        }
+
+        if (message.tool_calls) {
+          for (const toolCall of message.tool_calls) {
+            if (toolCall.type !== 'function') continue;
+
+            const functionName = toolCall.function.name;
+            const functionArgs = JSON.parse(toolCall.function.arguments);
+            const toolResult = await executeToolHandler(functionName, functionArgs, this.config);
+
+            this.messages.push({
+              role: 'tool',
+              tool_call_id: toolCall.id,
+              content: toolResult
+            });
+            output += `Tool ${functionName} result:\n${toolResult}\n`;
+          }
+        } else {
+          active = false;
+        }
+      } catch (error: any) {
+        console.error(chalk.red(error.message));
+        active = false;
+        output += `Error: ${error.message}\n`;
+      }
+    }
+
+    return output.trim();
+  }
 }
+

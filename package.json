@@ -10,12 +10,17 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "dev": "node --loader ts-node/esm src/index.ts",
+    "ui": "node dist/server.js",
+    "dev:ui": "node --loader ts-node/esm src/server.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepublishOnly": "npm run build"
   },
   "files": [
     "dist",
+    "netlify",
     "README.md",
+    "README-NETLIFY.md",
+    "netlify.toml",
     "package.json",
     "LICENSE"
   ],
