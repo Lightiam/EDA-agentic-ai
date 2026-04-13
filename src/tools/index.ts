@@ -8,6 +8,7 @@ import { ScreenshotTool } from './screenshot.js';
 import { ImageTool } from './image.js';
 import { PromptOptimizerTool } from './prompt-optimizer.js';
 import { CircuitDesignTool } from './circuit.js';
+import { ImageCircuitInterpreterTool } from './image-interpreter.js';
 
 // Central Registry of all available tools
 export const toolRegistry: ToolModule[] = [
@@ -22,7 +23,8 @@ export const toolRegistry: ToolModule[] = [
   BrowserTool,
   ScreenshotTool,
   ImageTool,
-  CircuitDesignTool
+  CircuitDesignTool,
+  ImageCircuitInterpreterTool
 ];
 
 export function getToolDefinitions() {

@@ -104,6 +104,8 @@ class CircuitEditor {
     this.connectingFrom = null;
     this.tempConnectionEnd = null;
     this.pendingComponentType = null;
+    this.currentImageBase64 = null;
+    this.currentImageFileName = '';
 
     this.setupEventListeners();
     this.draw();
@@ -137,6 +139,17 @@ class CircuitEditor {
       e.preventDefault();
       this.sendPrompt();
     });
+
+    // Image upload handlers
+    const imageUpload = document.getElementById('imageUpload');
+    if (imageUpload) {
+      imageUpload.addEventListener('change', (e) => this.handleImageUpload(e));
+    }
+
+    const analyzeBtn = document.getElementById('btn-analyze-image');
+    if (analyzeBtn) {
+      analyzeBtn.addEventListener('click', () => this.analyzeImage());
+    }
   }
 
   handleMouseDown(e) {
@@ -447,6 +460,82 @@ class CircuitEditor {
       const errEntry = document.createElement('div');
       errEntry.className = 'chat-entry agent';
       errEntry.innerHTML = `<div class="label">AI</div><div class="bubble">Error: ${error.message}</div>`;
+      chatLog.appendChild(errEntry);
+      chatLog.scrollTop = chatLog.scrollHeight;
+    }
+  }
+
+  handleImageUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      this.currentImageBase64 = event.target.result;
+      this.currentImageFileName = file.name;
+      
+      const preview = document.getElementById('imagePreview');
+      const container = document.getElementById('imagePreviewContainer');
+      if (preview && container) {
+        preview.src = this.currentImageBase64;
+        container.style.display = 'block';
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async analyzeImage() {
+    if (!this.currentImageBase64) {
+      alert('Please upload an image first');
+      return;
+    }
+
+    const chatLog = document.getElementById('chatLog');
+    const entry = document.createElement('div');
+    entry.className = 'chat-entry user';
+    entry.innerHTML = `<div class="label">You</div><div class="bubble">Analyzing circuit design from image: ${this.currentImageFileName}</div>`;
+    chatLog.appendChild(entry);
+    chatLog.scrollTop = chatLog.scrollHeight;
+
+    const loadingEntry = document.createElement('div');
+    loadingEntry.className = 'chat-entry agent';
+    loadingEntry.id = 'loading-entry';
+    loadingEntry.innerHTML = `<div class="label">AI</div><div class="bubble">Analyzing image...</div>`;
+    chatLog.appendChild(loadingEntry);
+
+    try {
+      const prompt = `Analyze this circuit design image and extract the circuit requirements. Use the interpret_circuit_image tool to analyze it.
+Image filename: ${this.currentImageFileName}
+Please identify:
+1. Components visible in the circuit
+2. Connections between components
+3. Circuit topology and function
+4. Design requirements
+5. Step-by-step implementation guide`;
+
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          prompt,
+          image: this.currentImageBase64,
+          imageFileName: this.currentImageFileName
+        }),
+      });
+
+      const data = await response.json();
+      
+      document.getElementById('loading-entry').remove();
+      const agentEntry = document.createElement('div');
+      agentEntry.className = 'chat-entry agent';
+      agentEntry.innerHTML = `<div class="label">AI</div><div class="bubble">${data.result || data.error}</div>`;
+      chatLog.appendChild(agentEntry);
+      chatLog.scrollTop = chatLog.scrollHeight;
+    } catch (error) {
+      document.getElementById('loading-entry').remove();
+      const errEntry = document.createElement('div');
+      errEntry.className = 'chat-entry agent';
+      errEntry.innerHTML = `<div class="label">AI</div><div class="bubble">Error analyzing image: ${error.message}</div>`;
       chatLog.appendChild(errEntry);
       chatLog.scrollTop = chatLog.scrollHeight;
     }

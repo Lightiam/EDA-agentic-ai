@@ -121,6 +121,8 @@ export async function runWebUI(port = 3000) {
         const body = await parseRequestBody(req);
         const payload = JSON.parse(body || '{}');
         const prompt = payload.prompt;
+        const image = payload.image;
+        const imageFileName = payload.imageFileName;
 
         if (!prompt || typeof prompt !== 'string') {
           res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -128,7 +130,12 @@ export async function runWebUI(port = 3000) {
           return;
         }
 
-        const result = await agent.chatToString(prompt);
+        let finalPrompt = prompt;
+        if (image) {
+          finalPrompt = `${prompt}\n\n[Image attached: ${imageFileName}]\nBase64 image data: ${image}`;
+        }
+
+        const result = await agent.chatToString(finalPrompt);
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ result }));
         return;
