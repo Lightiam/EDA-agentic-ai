@@ -7,7 +7,7 @@
     "autoclaw": "dist/index.js"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && node scripts/copy-public.js",
     "start": "node dist/index.js",
     "dev": "node --loader ts-node/esm src/index.ts",
     "ui": "node dist/server.js",

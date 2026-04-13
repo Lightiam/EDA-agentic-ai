@@ -1,6 +1,6 @@
-import { Agent } from '../../src/agent.js';
+import { Agent } from '../../dist/agent.js';
 
-let agentInstance: Agent | null = null;
+let agentInstance = null;
 
 async function getAgent() {
   if (!agentInstance) {
@@ -18,11 +18,11 @@ async function getAgent() {
   return agentInstance;
 }
 
-export default async (req: Request) => {
+export default async (req) => {
   if (req.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), {
       status: 405,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
   }
 
@@ -33,7 +33,7 @@ export default async (req: Request) => {
     if (!prompt || typeof prompt !== 'string') {
       return new Response(JSON.stringify({ error: 'prompt field is required' }), {
         status: 400,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' }
       });
     }
 
@@ -42,16 +42,13 @@ export default async (req: Request) => {
 
     return new Response(JSON.stringify({ result }), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('API error:', error);
-    return new Response(
-      JSON.stringify({ error: error.message || 'Internal server error' }),
-      {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
+    return new Response(JSON.stringify({ error: error.message || 'Internal server error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 };
